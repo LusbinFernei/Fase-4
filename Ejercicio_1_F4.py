@@ -2,3 +2,5 @@
 #Grupo: 230
 #Programa: Ingenieria de sitemas
 #Codigo fuente: autoria propia
+
+#Inicio del programa
