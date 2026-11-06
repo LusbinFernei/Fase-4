@@ -3,4 +3,6 @@
 #Programa: Ingenieria de sitemas
 #Codigo fuente: autoria propia
 
-#Inicio del programa
+#Inicio del programa  
+  
+#Programa Software FJ
