@@ -6,7 +6,12 @@
 #Inicio del programa  
   
 #Programa Software FJ
-from datetime import timedelta#Se importa la libreria necesaria para faciclitar la operaciones de comparacion
+from datetime import datetime
+from datetime import timedelta#Se importa las libreria necesaria para faciclitar la operaciones de comparacion con las fechas y horas
+
+
+
+
 
 class  SistemaAdministrador:#Se cre la clase que administrara los datos recividos
 
@@ -120,3 +125,68 @@ class  SistemaAdministrador:#Se cre la clase que administrara los datos recivido
         else:#Si la reserva exite
             reserva.cancelar()# Llama al método cancelar de la clase Reserva
             print("Reserva cancelada exitosamente.")#Imprime el siguiente mensaje
+
+
+def menu():#Metodo para mostrar el menu de opciones
+    sistema = SistemaAdministrador()# Se crea el objeto principal del sistema con listas de objetos clase clientes,servicios y reservas
+    while True:#Bucle para mantener abierto el menu
+        print("\n===== SoftwareFJ =====")#imprime el titulo de menu
+        #Se imprimen las opsiones para ejecutar
+        print("1. Registrar cliente")
+        print("2. Mostrar clientes")
+        print("3. Mostrar servicios")
+        print("4. Crear reserva")
+        print("5. Cancelar reserva")
+        print("6. Mostrar reservas")
+        print("7. Salir")
+        opcion = input("Seleccione una opción: ")#Se guarda el numero ingresado en la variable
+        if opcion == "7":#Si la opcion es 7 se cierra el menu
+            print("Programa finalizado.")#Se imprime el mensaje de finalizado
+            break#Para que el bucle se finalize
+        elif opcion == "1":# Si la opción seleccionada es registrar 
+            id_cliente = input("Ingrese el número de identificación: ")#Solicita el numero de documento y guarda en la variable
+            nombre = input("Ingrese el nombre del cliente: ")#Solicita el nombre y guarda en la variable
+            telefono = input("Ingrese el número telefónico: ")#Solicita el numero telefonico y guarda en la variable
+            correo = input("Ingrese el correo electrónico: ")#Solicita el correo y guarda en la variable
+            direccion = input("Ingrese la dirección: ")#Solicita la direccion y guarda en la variable
+            edad = int(input("Ingrese la edad: "))#Solicita la y guarda en la variable como dato numerico
+            
+            sistema.registrar_cliente( # Envía los datos al método registrar_cliente()
+                id_cliente,
+                nombre,
+                telefono,
+                correo,
+                direccion,
+                edad
+            )
+        elif opcion == "2":# Si la opción seleccionada es la 2
+            sistema.mostrar_clientes() # Llama al método que muestra todos los clientes registrados
+        elif opcion == "3":# Si la opción seleccionada es la 3
+            sistema.mostrar_servicios() # Llama al método que muestra todos los servicios disponibles
+        elif opcion == "4":# Si la opción seleccionada es 4
+            codigo_reserva = input("Ingrese el código de la reserva: ") # Se solicita el código de la reserva y se guarda en variable
+            id_cliente = input("Ingrese la identificación del cliente: ") # Solicita la identificación del cliente  y se guarda en variable
+            id_servicio = input("Ingrese el código del servicio: ")# Solicita el código del servicio y se guarda en variable
+            fecha = input("Ingrese la fecha y hora ejm 01/11/2026 09:11")#Se solicita la hpra y fecha y se guarda en variable
+            fecha_hora_inicio = datetime.strptime(# Convierte el texto ingresado a datetime y guarda el valor en variable
+                fecha,#Datos proporcianados por el usuario
+                "%d/%m/%Y %H:%M"#Indica el formato a transformar dia, mes, año, hora y minuto
+            )
+            duracion = int(#Se guarda en varible
+                input("Ingrese la duración en horas: ")# Solicita la duración del servicio y se convierte en dato numerico
+            )
+            sistema.crear_reserva( # Llama al método crear_reserva()
+                codigo_reserva,
+                id_cliente,
+                id_servicio,
+                fecha_hora_inicio,
+                duracion
+            )
+        elif opcion == "5":# Si la opción seleccionada es cancelar es 5
+            codigo_reserva = input(# Solicita el código de la reserva que se desea cancelar y se guarda en variable
+                "Ingrese el código de la reserva a cancelar: "
+            )
+            sistema.cancelar_reserva(codigo_reserva) # Llama al método cancelar_reserva()
+        elif opcion == "6":# Si la opción seleccionada es 6
+            sistema.mostrar_reservas()  # Llama al método que muestra todas las reservas registradas
+print(menu())
