@@ -11,8 +11,6 @@ from datetime import timedelta#Se importa las libreria necesaria para faciclitar
 
 
 
-
-
 class  SistemaAdministrador:#Se cre la clase que administrara los datos recividos
 
     def __init__(self):#Se define el meotodo constructor
@@ -21,7 +19,119 @@ class  SistemaAdministrador:#Se cre la clase que administrara los datos recivido
         self.servicios = []#Se crea la lista que alamacenara los objetos  seervicios
         self.reservas = []#Se crea la lista que almacenara los objetos reservas
 
+        self.cargar_servicios()#Carga la lista de los servicios ofrecidos
+    def cargar_servicios(self):#Metodo para cargar los servicios que se ofrecen
+        self.servicios.append(#Agrega los objetos a lista
+            ReservaSala(#Se crea el objeto apartir del metodo constructo de la clase
+                "RS001",
+                "Sala Pequeña",
+                "Pequeña",
+                399900,
+                50
+            )
+        )
+
+        self.servicios.append(
+            ReservaSala( 
+                "RS002",
+                "Sala Mediana",
+                "Mediana",
+                699900,
+                100
+            )
+        )
+
+        self.servicios.append(
+            ReservaSala(
+                "RS003",
+                "Sala Grande",
+                "Grande",
+                999900,
+                150
+            )
+        )
+
+    
+    # ASESORIAS
+  
+
+        self.servicios.append(#Se agrga el pbjeto a la lista
+            AsesoriaEspecializada(#Se crea el objeto apartir del metodo constructo de la clase
+                "AE001",
+                "Asesoría Jurídica",
+                "Jurídica",
+                100000
+            )
+        )
+
+        self.servicios.append(
+            AsesoriaEspecializada(
+                "AE002",
+                "Asesoría Tributaria",
+                "Tributaria",
+                150000
+            )
+        )
+
+        self.servicios.append(
+            AsesoriaEspecializada(
+                "AE003",
+                "Asesoría Financiera",
+                "Financiera",
+                100000
+            )
+        )
+
+        self.servicios.append(
+            AsesoriaEspecializada(
+                "AE004",
+                "Asesoría Marketing",
+                "Marketing",
+                120000
+            )
+        )
+
+        self.servicios.append(
+            AsesoriaEspecializada(
+                "AE005",
+                "Asesoría Tecnológica",
+                "Tecnológica",
+                160000
+            )
+        )
+
+    # EQUIPOS
+    
+
+        self.servicios.append(#Se agrega el objeto a la lista
+            AlquilerEquipo(#Se crea el objeto apartir del metodo constructo de la clase
+                "EQ001",
+                "Equipo de Sonido",
+                "Sonido",
+                29900
+            )
+        )
+
+        self.servicios.append(
+            AlquilerEquipo(
+                "EQ002",
+                "Equipo Audiovisual",
+                "Audiovisual",
+                59900
+            )
+        )
+
+        self.servicios.append(
+            AlquilerEquipo(
+                "EQ003",
+                "Equipo de Construcción",
+                "Construcción",
+                39900
+            )
+        )
+
     def buscar_cliente (self, id_cliente):#Metodo para buscar a un cliente y validar si ya esta registrado o no
+        
     
         for cliente in self.clientes:#Se recorre la lista de clientes
 
@@ -100,15 +210,15 @@ class  SistemaAdministrador:#Se cre la clase que administrara los datos recivido
             for reserva in self.reservas:#Recorre las reservas existentes
                 if reserva.servicio.obtener_id() == id_servicio:  # Verifica que la reserva no se esta haciendo sobre el mismo tipo de servicio y a la misma hora
                     inicio_existente = reserva.fecha_hora_inicio #Si existe una reserva con el ingresa obtine la hora de inicio y la guarda el dato en la varible
-                fin_existente = (#Variable para guarda la hora y fecha donde termina el serivico ya existente
-                    reserva.fecha_hora_inicio +#se toma la hora de inicio
-                    timedelta(hours=reserva.duracion)#Se suma con el tiempo de duracion, calculando asi la hora de terminacion del servicio
+                    fin_existente = (#Variable para guarda la hora y fecha donde termina el serivico ya existente
+                        reserva.fecha_hora_inicio +#se toma la hora de inicio
+                        timedelta(hours=reserva.duracion)#Se suma con el tiempo de duracion, calculando asi la hora de terminacion del servicio
                 ) 
-                if (fecha_hora_inicio < fin_existente and#Compara la hora de incio del nuevo servicio con la hora de terminacion del servicio en curso
-                    fecha_hora_fin > inicio_existente):#Compara la hora de terminacion del nuevo servicio y la hora de inicio del servicio en curso
-                    print("El servicio ya se encuentra reservado en ese horario.")#Si amnbas condiciones se cumplen se imprime el siguiente mensaje
-                    return#Termina de ejecutarse el metodo por conflicto de horarios
-                nueva_reserva = Reserva(#Si la condicion no se cumple se crea el objeto Reserva y se guarda en la varible utilizando el metodo constructor de la clase Reserva
+                    if (fecha_hora_inicio < fin_existente and#Compara la hora de incio del nuevo servicio con la hora de terminacion del servicio en curso
+                        fecha_hora_fin > inicio_existente):#Compara la hora de terminacion del nuevo servicio y la hora de inicio del servicio en curso
+                        print("El servicio ya se encuentra reservado en ese horario.")#Si amnbas condiciones se cumplen se imprime el siguiente mensaje
+                        return#Termina de ejecutarse el metodo por conflicto de horarios
+            nueva_reserva = Reserva(#Si la condicion no se cumple se crea el objeto Reserva y se guarda en la varible utilizando el metodo constructor de la clase Reserva
                     codigo_reserva, #Codigo de la reserva
                     cliente,#Cliente
                     servicio,#Tipo de servicio
@@ -116,8 +226,8 @@ class  SistemaAdministrador:#Se cre la clase que administrara los datos recivido
                     duracion,#Duracion en horas
                     "Confirmada"#Estado de la reserva
                    )
-                self.reservas.append(nueva_reserva)# Guarda la reserva en la lista
-                print("Reserva creada exitosamente.") # Confirma la creación de la reserva
+            self.reservas.append(nueva_reserva)# Guarda la reserva en la lista
+            print("Reserva creada exitosamente.") # Confirma la creación de la reserva
     def cancelar_reserva(self, codigo_reserva):#Metodo para cancelar la reserva
         reserva = self.buscar_reserva(codigo_reserva)# Busca la reserva por su código
         if reserva is None:#Si la reserva no exite
