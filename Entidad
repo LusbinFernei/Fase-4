@@ -1,0 +1,81 @@
+#Estudiantes: ANDREA LIZARAZO PRADA_LUSBIN FERNEI BARAJAS CABALLERO_MAVERIK ANDRES CALDERON URIBE_OSCAR GOMEZ ARENAS_JOJHAN DAVID LIZARAZO RIOS
+#Grupo: 230
+#Programa: Ingenieria de sitemas
+#Codigo fuente: autoria propia
+
+#Inicio del programa  
+  
+#Programa Software FJ
+
+
+
+"""Clase padre abstracta Entidad (Software FJ)."""
+ 
+import logging
+from abc import ABC, abstractmethod
+ 
+from excepciones import DatoInvalidoError, ParametroFaltanteError
+ 
+logger = logging.getLogger("SoftwareFJ")
+ 
+ 
+class Entidad(ABC):
+    """Entidad general del sistema.
+ 
+    id     -> documento de identidad del cliente o codigo del servicio.
+    nombre -> nombre del cliente o nombre asociado al servicio.
+    """
+ 
+    def __init__(self, id, nombre):
+        self._id = None
+        self._nombre = None
+        self.id = id          # pasa por el setter (valida)
+        self.nombre = nombre  # pasa por el setter (valida)
+ 
+    # ----- id -----
+    @property
+    def id(self):
+        return self._id
+ 
+    @id.setter
+    def id(self, valor):
+        if valor is None or str(valor).strip() == "":
+            raise ParametroFaltanteError("El id es obligatorio.")
+        self._id = str(valor).strip()
+ 
+    # ----- nombre -----
+    @property
+    def nombre(self):
+        return self._nombre
+ 
+    @nombre.setter
+    def nombre(self, valor):
+        self._nombre = self.validar_nombre(valor)
+ 
+    # ----- metodos de acceso (los usa administrador) -----
+    def obtener_id(self):
+        return self.id
+ 
+    def obtener_nombre(self):
+        return self.nombre
+ 
+    # ----- validacion -----
+    @staticmethod
+    def validar_nombre(valor):
+        """Verifica que el nombre sea str, tenga al menos 3 caracteres y no tenga numeros."""
+        if not isinstance(valor, str):
+            raise DatoInvalidoError(
+                f"El nombre debe ser texto (se recibio {type(valor).__name__}).")
+        valor = valor.strip()
+        if len(valor) < 3:
+            raise DatoInvalidoError("El nombre debe tener al menos 3 caracteres.")
+        if any(c.isdigit() for c in valor):
+            raise DatoInvalidoError("El nombre no puede contener numeros.")
+        return valor
+ 
+    # ----- metodo abstracto -----
+    @abstractmethod
+    def mostrar_informacion(self):
+        """Metodo abstracto: muestra id y nombre."""
+
+
