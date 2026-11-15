@@ -1,0 +1,116 @@
+#Estudiantes: ANDREA LIZARAZO PRADA_LUSBIN FERNEI BARAJAS CABALLERO_MAVERIK ANDRES CALDERON URIBE_OSCAR GOMEZ ARENAS_JOJHAN DAVID LIZARAZO RIOS
+#Grupo: 230
+#Programa: Ingenieria de sitemas
+#Codigo fuente: autoria propia
+
+#Inicio del programa  
+  
+#Programa Software FJ
+
+
+
+"""Clase hija Cliente (Software FJ). Hereda de Entidad."""
+ 
+import logging
+import re
+ 
+from entidad import Entidad
+from excepciones import DatoInvalidoError
+ 
+logger = logging.getLogger("SoftwareFJ")
+ 
+ 
+class Cliente(Entidad):
+    """Recoge los datos necesarios para generar una reserva.
+ 
+    Hereda id (documento) y nombre de Entidad.
+    Atributos propios (privados / encapsulados):
+      numero_telefono, correo_electronico, direccion_servicio, edad
+    """
+ 
+    def __init__(self, id, nombre, numero_telefono, correo_electronico,
+                 direccion_servicio, edad):
+        super().__init__(id, nombre)
+        self.__numero_telefono = None
+        self.__correo_electronico = None
+        self.__direccion_servicio = None
+        self.__edad = None
+        self.numero_telefono = numero_telefono
+        self.correo_electronico = correo_electronico
+        self.direccion_servicio = direccion_servicio
+        self.edad = edad
+        logger.info("Cliente creado: %s", self.id)
+ 
+    # ----- numero_telefono -----
+    @property
+    def numero_telefono(self):
+        return self.__numero_telefono
+ 
+    @numero_telefono.setter
+    def numero_telefono(self, valor):
+        self.__numero_telefono = self.validar_telefono(valor)
+ 
+    # ----- correo_electronico -----
+    @property
+    def correo_electronico(self):
+        return self.__correo_electronico
+ 
+    @correo_electronico.setter
+    def correo_electronico(self, valor):
+        self.__correo_electronico = self.validar_correo(valor)
+ 
+    # ----- direccion_servicio -----
+    @property
+    def direccion_servicio(self):
+        return self.__direccion_servicio
+ 
+    @direccion_servicio.setter
+    def direccion_servicio(self, valor):
+        if not isinstance(valor, str) or len(valor.strip()) < 5:
+            raise DatoInvalidoError(
+                "La direccion del servicio debe ser texto de al menos 5 caracteres.")
+        self.__direccion_servicio = valor.strip()
+ 
+    # ----- edad -----
+    @property
+    def edad(self):
+        return self.__edad
+ 
+    @edad.setter
+    def edad(self, valor):
+        self.__edad = self.validar_edad(valor)
+ 
+    # ----- validaciones -----
+    @staticmethod
+    def validar_edad(valor):
+        """Verifica que la edad sea int y que el cliente sea mayor de edad."""
+        if isinstance(valor, bool) or not isinstance(valor, int):
+            raise DatoInvalidoError(
+                f"La edad debe ser un numero entero (se recibio {type(valor).__name__}).")
+        if valor < 18:
+            raise DatoInvalidoError("El cliente debe ser mayor de edad (18 anos o mas).")
+        if valor > 120:
+            raise DatoInvalidoError("La edad ingresada no es realista.")
+        return valor
+ 
+    @staticmethod
+    def validar_correo(valor):
+        """Verifica que el correo tenga @ y un dominio con punto (ej. .com, .co)."""
+        if not isinstance(valor, str) or not re.fullmatch(
+                r"[^@\s]+@[^@\s]+\.[A-Za-z]{2,}", valor.strip()):
+            raise DatoInvalidoError(f"Correo electronico invalido: {valor!r}.")
+        return valor.strip().lower()
+ 
+    @staticmethod
+    def validar_telefono(valor):
+        """Verifica que contenga solo numeros y exactamente 10 caracteres."""
+        if not isinstance(valor, str) or not re.fullmatch(r"\d{10}", valor.strip()):
+            raise DatoInvalidoError(
+                "El telefono debe contener solo numeros y tener exactamente 10 digitos.")
+        return valor.strip()
+ 
+    # ----- metodo heredado de Entidad (imprime, como espera SistemaAdministrador) -----
+    def mostrar_informacion(self):
+        print(f"Cliente [{self.id}] {self.nombre} | Tel: {self.numero_telefono} | "
+              f"Correo: {self.correo_electronico} | "
+              f"Direccion: {self.direccion_servicio} | Edad: {self.edad}")
