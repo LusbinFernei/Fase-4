@@ -1,15 +1,79 @@
-#Estudiantes: ANDREA LIZARAZO PRADA_LUSBIN FERNEI BARAJAS CABALLERO_MAVERIK ANDRES CALDERON URIBE_OSCAR GOMEZ ARENAS_JOJHAN DAVID LIZARAZO RIOS
-#Grupo: 230
-#Programa: Ingenieria de sitemas
-#Codigo fuente: autoria propia
 
-#Inicio del programa  
-  
-#Programa Software FJ
 from datetime import datetime
 from datetime import timedelta#Se importa las libreria necesaria para faciclitar la operaciones de comparacion con las fechas y horas
 
+class Reserva:#Se cre la clase Reserva, la cual administrara los metodo relacionados con las reserva
 
+    def __init__(#Metodo constructor
+        self,#Se instancia para poder accder a los atributo de la clase
+        codigo_reserva,
+        cliente,
+        servicio,
+        fecha_hora_inicio,
+        duracion,
+        estado
+    ):
+
+        self.codigo_reserva = codigo_reserva#Se guarda el codigo de reserva
+        self.cliente = cliente#Se guarda el numero de documento del cliente
+        self.servicio = servicio#Se guarda el codigo del servicio
+        self.fecha_hora_inicio = fecha_hora_inicio#Se guarda la fecha ingresada por el usaurio
+        self.duracion = duracion #Se guarda la duracion en horas ingresada
+        self.estado = estado#Se guarda el estado de confirmada
+
+    def confirmar(self):#Se crea el metodo para confrimar la reserva
+        self.estado = "Confirmada"#La guarda como confirmada
+
+    def cancelar(self):#Se crea el metodo que cancela una reserva
+        self.estado = "Cancelada"#La guarda como cancelada
+
+    def procesar(self):#metodo para procesar la reserva
+        self.estado = "Procesada"#La guarda como procesada
+
+    def calcular_total(self):#Metodo para calcular el total a pagar
+        return self.servicio.calcular_costo(#Retorna el metodo calcular costo
+            self.duracion#Retorna las horas ingresadas por el usuario para calcular el costo
+        )
+
+    def mostrar_informacion(self):#Metodo para mostrar la informacion de las reservas creadas
+
+        print("\n===== RESERVA =====")#imprime el titulo de la clase
+
+        print(
+            f"Código de reserva: "#Imprime el codigo de la reservsa
+            f"{self.codigo_reserva}"#Utilza el codigo ingresado por el usuario
+        )
+
+        print(#Imprime al cliente
+            f"Cliente: "
+            f"{self.cliente.obtener_nombre()}"#Utiliza el nombre ingresado por el  usuario ultilizando el metodo obtener  nombre
+        )
+
+        print(
+            f"Servicio: "#Imprime el nombre del servicio
+            f"{self.servicio.obtener_nombre()}"#Utiliza el servicio seleccionado por el  usuario ultilizando el metodo obtener  nombre
+        )
+        
+
+        print(
+            f"Fecha y hora inicio: "#Impreme la fecha en la que inicia la reserva
+            f"{self.fecha_hora_inicio.strftime('%d/%m/%Y %H:%M')}"#Utiliza la fecha ingresada por el usuario
+        )
+
+        print(#Imprime la duracion del servicio
+            f"Duración: "#Texto que se imprime junto a la duración
+            f"{self.duracion} horas"#UTILIZA LA DURACION INGRESADA POR EL USUARIO
+        )
+
+        print(#Imprime el estado del servicio
+            f"Estado: "#Texto que se imprime junto al estado
+            f"{self.estado}"#Utiliza el estado"confirmada""cancelada""procesada"
+        )
+
+        print(#Imprime le total a pagar
+            f"Total: "#Texto que se imprime junto al total a pagar
+            f"${self.calcular_total()}"#Lama al metodo para mostrar el total a pagar
+        )
 
 class  SistemaAdministrador:#Se cre la clase que administrara los datos recividos
 
