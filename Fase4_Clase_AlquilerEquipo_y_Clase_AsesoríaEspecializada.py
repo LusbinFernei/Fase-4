@@ -1,120 +1,100 @@
+# Este código define dos clases de servicios: AlquilerEquipo y AsesoriaEspecializada, ambas heredan de la clase base Servicio. 
+
 """
-Aqui esta mi parte del proyecto, en este archivo se encuentran las clases y funciones para el alquiler de equipos y asesorías especializadas.
+CLASE: Alquiler de Equipo
 """
-# Tarifas (de prueba) y clase para alquiler de equipos.
-TARIFAS_EQUIPOS = {
-    "Sonido": 29900,
-    "Audiovisual": 59900,
-    "Construccion": 39900
-    }
-
-def obtener_tarifa_equipo(tipo_equipo):
-    
-    tarifa = TARIFAS_EQUIPOS.get(tipo_equipo)
-    
-    if tipo_equipo not in TARIFAS_EQUIPOS:
-            raise KeyError("Tipo de equipo no definido")
-
-    return tarifa
-
-# Representa el servicio de alquiler de equipos.
-class AlquilerEquipo:
-    # Inicializa el equipo y verifica que su tarifa sea coherente.
-    def __init__(self, id, nombre, tipo_equipo, costo_base, disponible=True):
-        self.id = id
-        self.nombre = nombre
+# Esta clase representa un servicio de alquiler de equipo, que hereda de la clase base Servicio.
+# Incluye atributos específicos como el tipo de equipo y métodos para validar parámetros, calcular costos, describir el servicio y mostrar información detallada del servicio.
+class AlquilerEquipo(Servicio):
+    # Constructor de la clase AlquilerEquipo, donde se inicializan los atributos específicos del servicio de alquiler de equipo.
+    def __init__( # Este método inicializa los atributos de la clase AlquilerEquipo, incluyendo el tipo de equipo y el costo base del servicio.
+        self, # representa al objeto actual de la clase AlquilerEquipo.
+        id, # identificador unico del servicio de alquiler de equipo.
+        nombre, # nombre del servicio de alquiler de equipo.
+        tipo_equipo, # tipo de equipo que se va a alquilar.
+        costo_base # costo base del servicio de alquiler de equipo.
+    ):
+        # llamada al constructor de la clase base Servicio para inicializar los atributos heredados.
+        super().__init__(
+            id, # envia el identificador único del servicio de alquiler de equipo a la clase base Servicio.
+            nombre, # envia el nombre del servicio de alquiler de equipo a la clase base Servicio.
+            "Alquiler de Equipo", # envia el tipo de servicio a la clase base Servicio.
+            costo_base, # envia el costo base del servicio de alquiler de equipo a la clase base Servicio.
+            True # envia la disponibilidad del servicio de alquiler de equipo a la clase base Servicio.
+        )
+        # guarda el tipo de equipo en un atributo específico de la clase AlquilerEquipo.
+        # Se usa self. para que el dato quede asociado al objeto y pueda ser accedido desde otros métodos de la clase.
         self.tipo_equipo = tipo_equipo
-        tarifa_calculada = obtener_tarifa_equipo(tipo_equipo)
-
-        if costo_base != tarifa_calculada:
-            raise ValueError("El costo base no coincide con el tipo de equipo")
-
-        self.costo_base = costo_base
-        self.disponible = disponible
-        self.costo_base_hora = tarifa_calculada
-    
-    # Calcula el costo del alquiler según la cantidad de horas.
-    def calcular_costo(self, horas):
-        if not isinstance(horas, (int, float)):
-            raise TypeError("Las horas deben ser un número")
-
-        if horas <= 0:
-            raise ValueError("El número de horas debe ser mayor que cero")
-
-        return self.costo_base_hora * horas
-
-    # Verifica que el equipo esté disponible para alquilarse.
+        # llama al método validar_parametros para asegurarse de que los parámetros proporcionados sean válidos.
+        self.validar_parametros()
+    # Este método valida los parámetros proporcionados al crear una instancia de AlquilerEquipo. 
+    # En este caso, devuelve True, pero se puede modificar para incluir validaciones específicas según sea necesario.
     def validar_parametros(self):
-        if not self.disponible:
-            raise ValueError("El equipo no está disponible para alquiler")
         return True
-
-    # Devuelve una descripción del servicio y su tarifa.
+    # Este método calcula el costo total del servicio de alquiler de equipo en función de la duración del alquiler. Multiplica el costo base por la duración proporcionada.
+    def calcular_costo(self, duracion):
+        return self.costo_base * duracion
+    # Este método devuelve una descripción del servicio de alquiler de equipo, incluyendo el tipo de equipo que se está alquilando.
     def describir_servicio(self):
-        return f"Alquiler de equipo {self.tipo_equipo} a ${self.costo_base_hora} por hora."
-    
-    # Muestra la información principal del equipo.
+        return (
+            f"Equipo tipo "
+            f"{self.tipo_equipo}"
+        )
+    # Este método muestra información detallada sobre el servicio de alquiler de equipo, incluyendo el identificador, nombre, tipo de equipo, costo base, disponibilidad y una descripción del servicio.
     def mostrar_informacion(self):
-        print(f"Tipo de equipo: {self.tipo_equipo}")
-        print(f"Disponible: {self.disponible}")
-        print(f"Costo por hora: ${self.costo_base_hora}")
-        print(self.describir_servicio())
+        print("\n===== ALQUILER DE EQUIPO =====") # Imprime un encabezado para indicar que se está mostrando información sobre el servicio de alquiler de equipo.
+        print(f"Identificador: {self.obtener_id()}") # Imprime el identificador único del servicio de alquiler de equipo utilizando el método obtener_id() heredado de la clase base Servicio.
+        print(f"Nombre: {self.obtener_nombre()}") # Imprime el nombre del servicio de alquiler de equipo utilizando el método obtener_nombre() heredado de la clase base Servicio.
+        print(f"Tipo de equipo: {self.tipo_equipo}") # Imprime el tipo de equipo que se está alquilando, accediendo al atributo tipo_equipo de la clase AlquilerEquipo.
+        print(f"Costo base: ${self.costo_base}") # Imprime el costo base del servicio de alquiler de equipo, accediendo al atributo costo_base de la clase AlquilerEquipo.
+        print(f"Disponible: {self.disponible}") # Imprime la disponibilidad del servicio de alquiler de equipo, accediendo al atributo disponible de la clase AlquilerEquipo.
+        print(self.describir_servicio()) # Imprime la descripción del servicio de alquiler de equipo utilizando el método describir_servicio() de la clase AlquilerEquipo.
 
-"""Tarifas (de prueba) y clase para asesorías especializadas."""
-TARIFAS_ASESORIAS = {
-"Juridica": 100000,
-"Tributaria": 150000,
-"Financiera": 100000,
-"Marketing": 120000,
-"Tecnologica": 160000,
-}
-
-def obtener_tarifa_asesoria(tipo_asesoria):
-
-    tarifa = TARIFAS_ASESORIAS.get(tipo_asesoria)
-    
-    if tipo_asesoria not in TARIFAS_ASESORIAS:
-        raise KeyError("Tipo de asesoría no definido")
-
-    return tarifa
-
-# Representa el servicio de asesoría especializada.
-class AsesoriaEspecializada:
-    # Inicializa la asesoría y verifica que su tarifa sea coherente.
-    def __init__(self, id, nombre, tipo_asesoria, costo_base, disponible=True):
-        self.id = id
-        self.nombre = nombre
+"""
+CLASE: Asesoría Especializada
+"""
+# Esta clase representa un servicio de asesoría especializada, que hereda de la clase base Servicio. 
+# Incluye atributos específicos como el tipo de asesoría y métodos para validar parámetros, calcular costos, describir el servicio y mostrar información detallada del servicio.
+class AsesoriaEspecializada(Servicio):
+    # Constructor de la clase AsesoriaEspecializada, donde se inicializan los atributos específicos del servicio de asesoría especializada.
+    def __init__( # Este método inicializa los atributos de la clase AsesoriaEspecializada, incluyendo el tipo de asesoría y el costo base del servicio.
+        self, # representa al objeto actual de la clase AsesoriaEspecializada.
+        id, # identificador único del servicio de asesoría especializada.
+        nombre, # nombre del servicio de asesoría especializada.
+        tipo_asesoria, # tipo de asesoría que se va a ofrecer.
+        costo_base # costo base del servicio de asesoría especializada.
+    ):
+        # llamada al constructor de la clase base Servicio para inicializar los atributos heredados.
+        super().__init__(
+            id, # envia el identificador único del servicio de asesoría especializada a la clase base Servicio.
+            nombre, # envia el nombre del servicio de asesoría especializada a la clase base Servicio.
+            "Asesoría Especializada", # envia el tipo de servicio a la clase base Servicio.
+            costo_base, # envia el costo base del servicio de asesoría especializada a la clase base Servicio.
+            True # envia la disponibilidad del servicio de asesoría especializada a la clase base Servicio.
+        )
+        # guarda el tipo de asesoría en un atributo específico de la clase AsesoriaEspecializada.
         self.tipo_asesoria = tipo_asesoria
-        
-        tarifa_calculada = obtener_tarifa_asesoria(tipo_asesoria)
-
-        if costo_base != tarifa_calculada:
-            raise ValueError("El costo base no coincide con el tipo de asesoría")
-
-        self.costo_base = costo_base
-        self.disponible = disponible
-        self.costo_base_hora = tarifa_calculada
-
-    # Calcula el costo de la asesoría según la cantidad de horas.
-    def calcular_costo(self, horas):
-        if not isinstance(horas, (int, float)):
-            raise TypeError("Las horas deben ser un número")
-
-        if horas <= 0:
-            raise ValueError("El número de horas debe ser mayor que cero")
-
-        return self.costo_base_hora * horas
-    # Verifica que la asesoría esté disponible.
+        # llama al método validar_parametros para asegurarse de que los parámetros proporcionados sean válidos.
+        self.validar_parametros()
+    # Este método valida los parámetros proporcionados al crear una instancia de AsesoriaEspecializada. 
+    # En este caso, devuelve True, pero se puede modificar para incluir validaciones específicas según sea necesario.
     def validar_parametros(self):
-        if not self.disponible:
-            raise ValueError("La asesoría no está disponible")
         return True
-    # Devuelve una descripción del servicio y su tarifa.
+    # Este método calcula el costo total del servicio de asesoría especializada en función de la duración de la asesoría. Multiplica el costo base por la duración proporcionada.
+    def calcular_costo(self, duracion):
+        return self.costo_base * duracion
+    # Este método devuelve una descripción del servicio de asesoría especializada, incluyendo el tipo de asesoría que se está ofreciendo.
     def describir_servicio(self):
-        return f"Asesoría especializada en {self.tipo_asesoria} a ${self.costo_base_hora} por hora."
-    # Muestra la información principal de la asesoría.
+        return (
+            f"Asesoría especializada en "
+            f"{self.tipo_asesoria}"
+        )
+    # Este método muestra información detallada sobre el servicio de asesoría especializada, incluyendo el identificador, nombre, tipo de asesoría, costo base, disponibilidad y una descripción del servicio.
     def mostrar_informacion(self):
-        print(f"Tipo de asesoría: {self.tipo_asesoria}")
-        print(f"Disponible: {self.disponible}")
-        print(f"Costo por hora: ${self.costo_base_hora}")
-        print(self.describir_servicio())
+        print("\n===== ASESORÍA ESPECIALIZADA =====") # Imprime un encabezado para indicar que se está mostrando información sobre el servicio de asesoría especializada.
+        print(f"Identificador: {self.obtener_id()}") # Imprime el identificador único del servicio de asesoría especializada utilizando el método obtener_id() heredado de la clase base Servicio.
+        print(f"Nombre: {self.obtener_nombre()}") # Imprime el nombre del servicio de asesoría especializada utilizando el método obtener_nombre() heredado de la clase base Servicio.
+        print(f"Tipo de asesoría: {self.tipo_asesoria}") # Imprime el tipo de asesoría que se está ofreciendo, accediendo al atributo tipo_asesoria de la clase AsesoriaEspecializada.
+        print(f"Costo base: ${self.costo_base}") # Imprime el costo base del servicio de asesoría especializada, accediendo al atributo costo_base de la clase AsesoriaEspecializada.
+        print(f"Disponible: {self.disponible}") # Imprime la disponibilidad del servicio de asesoría especializada, accediendo al atributo disponible de la clase AsesoriaEspecializada.
+        print(self.describir_servicio()) # Imprime la descripción del servicio de asesoría especializada utilizando el método describir_servicio() de la clase AsesoriaEspecializada.
