@@ -71,6 +71,39 @@ class Cliente(Entidad):
         # Guarda la edad del cliente
         self._edad = edad
  
+    #-------------------se agrega el metodo validar cliente------------------------------------------------------------#
+    # Método que junta todas las validaciones del cliente; si alguna falla
+    # lanza una excepción, y si todas pasan devuelve True
+    def validar_cliente(self):
+ 
+        # Comprueba que el nombre no esté vacío.
+        # "not" invierte el resultado: entra al if cuando validar_nombre() devuelve False
+        if not self.validar_nombre():
+            # Detiene el método y lanza la excepción ErrorCliente con este mensaje
+            raise ErrorCliente("El nombre del cliente es obligatorio.")
+ 
+        # Comprueba que el cliente sea mayor de edad.
+        # Entra al if cuando validar_edad() devuelve False
+        if not self.validar_edad():
+            # Lanza ErrorCliente indicando que no cumple la edad mínima
+            raise ErrorCliente("El cliente debe ser mayor de 18 años.")
+ 
+        # Comprueba que el correo tenga el símbolo @.
+        # Entra al if cuando validar_correo() devuelve False
+        if not self.validar_correo():
+            # Lanza ErrorCliente indicando que el correo no es válido
+            raise ErrorCliente("El correo electrónico no es válido debe contener @.")
+ 
+        # Comprueba que el teléfono tenga mínimo 7 caracteres.
+        # Entra al if cuando validar_telefono() devuelve False
+        if not self.validar_telefono():
+            # Lanza ErrorCliente indicando que el teléfono es muy corto
+            raise ErrorCliente("El teléfono debe tener mínimo 7 dígitos.")
+ 
+        # Si ninguna validación falló, el cliente es válido y se devuelve True
+        return True
+    #--------------------------------------------------------------------------------#
+ 
     # Método que valida el nombre; devuelve True o False
     def validar_nombre(self):
         # strip() quita los espacios al inicio y al final;
@@ -109,7 +142,6 @@ class Cliente(Entidad):
         print(f"Dirección: {self._direccion_servicio}")
         # Imprime la edad guardada en el objeto
         print(f"Edad: {self._edad}")
-
 
 
 
