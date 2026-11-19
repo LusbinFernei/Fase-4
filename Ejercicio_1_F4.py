@@ -217,11 +217,18 @@ class  SistemaAdministrador:#Se cre la clase que administrara los datos recivido
     
 
     def registrar_cliente(self, id_cliente, nombre, telefono, correo, direccion, edad):#Metodo para registrar a un cliente nuevo
-        cliente_ya_registrado = self.buscar_cliente(id_cliente) # Busca si ya existe un cliente con ese número de identificación y lo guarda en la variable 
-        if cliente_ya_registrado is not None:# Si el resultado de buscar_cliente es diferente a None el cliente ya esta registra
-            print("El cliente ya se encuentra registrado.") # Muestra un mensaje informando que ya existe
-        else:#En caso contrario
-            nuevo_cliente = Cliente(#Crea el cliente con el metodo constructor de la clase Cliente
+        validar_dato(id_cliente, "Identificación")#verifica que el campo no este vacio utilizando el metodo validar dato
+        validar_dato(nombre, "Nombre")#verifica que el campo no este vacio utilizando el metodo validar dato
+        validar_dato(telefono, "Teléfono")#verifica que el campo no este vacio utilizando el metodo validar dato
+        validar_dato(correo, "Correo")#verifica que el campo no este vacio utilizando el metodo validar dato
+        validar_dato(direccion, "Dirección")#verifica que el campo no este vacio utilizando el metodo validar dato
+
+         
+        if self.buscar_cliente(id_cliente) is not None:# verifica si el cliente ya está registrado recorriendo la lista de identificaciones
+            raise ErrorCliente("El cliente ya se encuentra registrado.")#Imprime la exepcion  cuando la identificación coincide
+        
+    
+        nuevo_cliente = Cliente(#Crea el cliente con el metodo constructor de la clase Cliente
             id_cliente,#Numero de cedula
             nombre,#Nombre de la persona
             telefono,#Numero celular
@@ -229,8 +236,12 @@ class  SistemaAdministrador:#Se cre la clase que administrara los datos recivido
             direccion,#Direccion de residencia
             edad#Edad
         )
+        
+        nuevo_cliente.validar_cliente() #verifica que los datos del cliente sean correctos utilizando el metodo validar
+
         self.clientes.append(nuevo_cliente)# Agrega el nuevo cliente en la lista de clientes
-        print("Cliente registrado exitosamente.") #Imprime el mensaje confirmando el registro exitoso del cliente en la varible clientes
+         # Registra el evento exitoso.
+        registrar_evento("Cliente registrado exitosamente.")#Ejecuta el metodo registrar_evento imprimiendo el mensaje
 
     def mostrar_clientes(self):#Metodo para mostrar la informacion de los clientes y a los clientes registrados
         if len(self.clientes) == 0:# Verifica si existen clientes registrados confirmando si la lista esta vacia utilizando len para contar el numero de elementos y compararlos con el "0"
@@ -258,30 +269,50 @@ class  SistemaAdministrador:#Se cre la clase que administrara los datos recivido
     
 
     def crear_reserva(self,#Metodo para crear una reserva usando el constructor de la clase Reserva
-                  codigo_reserva,
-                  id_cliente,
-                  id_servicio,
-                  fecha_hora_inicio,
-                  duracion):
-        cliente = self.buscar_cliente(id_cliente)# Busca el cliente utilizando el numero de identificación ingresado
-        servicio = self.buscar_servicio(id_servicio)#Busca el codigo del servicio
-        if cliente is None: # Si el cliente no esta registrado
-            print("El cliente no se encuentra registrado.")#Imprime el siguiente mensaje
-        elif servicio is None:#Si el codigo de servico no existe
-            print("El servicio no se encuentra registrado.")#Imprime el siguiente mensaje
-        else:# Si el cliente y el servicio estan registrados se continua con la reserva
-            fecha_hora_fin = fecha_hora_inicio + timedelta(hours=duracion)# Calcula la fecha y hora de finalización de la nueva reserva
-            for reserva in self.reservas:#Recorre las reservas existentes
-                if reserva.servicio.obtener_id() == id_servicio:  # Verifica que la reserva no se esta haciendo sobre el mismo tipo de servicio y a la misma hora
-                    inicio_existente = reserva.fecha_hora_inicio #Si existe una reserva con el ingresa obtine la hora de inicio y la guarda el dato en la varible
-                    fin_existente = (#Variable para guarda la hora y fecha donde termina el serivico ya existente
-                        reserva.fecha_hora_inicio +#se toma la hora de inicio
-                        timedelta(hours=reserva.duracion)#Se suma con el tiempo de duracion, calculando asi la hora de terminacion del servicio
+        codigo_reserva,
+        id_cliente,
+        id_servicio,
+        fecha_hora_inicio,
+        duracion):
+             
+        validar_dato(codigo_reserva, "Código de reserva")#Verifica que los datos obligatorios no estén vacíos utilizando el metodo validar
+        validar_dato(id_cliente, "Identificación del cliente")#Verifica que los datos obligatorios no estén vacíos utilizando el metodo validar
+        validar_dato(id_servicio, "Código del servicio")#Verifica que los datos obligatorios no estén vacíos utilizando el metodo validar
+        
+        
+       
+        if duracion <= 0:#verifica que la duración sea mayor a 0
+            raise ErrorReserva("La duración debe ser mayor que cero.")#Lanza la exepcion Error y imprime el mensaje
+        
+        if self.buscar_reserva(codigo_reserva) is not None:#Verifica que el código de reserva no esté repetido.
+            raise ErrorReserva("El código de reserva ya existe.")#Lanza la exepcion Error y imprime el mensaje
+            
+      
+        cliente = self.buscar_cliente(id_cliente) # recorre las identificaciones para verificar que no se encuentre ya registrada
+
+        if cliente is None:#Recorre las lista de cliente buscando una identificacion que coinsida
+            raise ErrorCliente("El cliente no se encuentra registrado.")#Lanza la exepcion error y imprime el mensaje
+
+        servicio = self.buscar_servicio(id_servicio)# Ejecuta el metodo buscar servicio y verifica que se encuentre en la lista
+
+        if servicio is None:#Si el codigo de servico no existe
+            raise ErrorServicio("El servicio no se encuentra registrado.")#Lanza la exepcion error y imprime el mensaje
+        
+        # Si el cliente y el servicio estan registrados se continua con la reserva
+        fecha_hora_fin = fecha_hora_inicio + timedelta(hours=duracion)# Calcula la fecha y hora de finalización de la nueva reserva
+        for reserva in self.reservas:#Recorre las reservas existentes
+            if reserva.servicio.obtener_id() == id_servicio:  # Verifica que la reserva no se esta haciendo sobre el mismo tipo de servicio y a la misma hora
+                inicio_existente = reserva.fecha_hora_inicio #Si existe una reserva con el ingresa obtine la hora de inicio y la guarda el dato en la varible
+                fin_existente = (#Variable para guarda la hora y fecha donde termina el serivico ya existente
+                    inicio_existente +#se toma la hora de inicio
+                    timedelta(hours=reserva.duracion)#Se suma con el tiempo de duracion, calculando asi la hora de terminacion del servicio
                 ) 
-                    if (fecha_hora_inicio < fin_existente and#Compara la hora de incio del nuevo servicio con la hora de terminacion del servicio en curso
-                        fecha_hora_fin > inicio_existente):#Compara la hora de terminacion del nuevo servicio y la hora de inicio del servicio en curso
-                        print("El servicio ya se encuentra reservado en ese horario.")#Si amnbas condiciones se cumplen se imprime el siguiente mensaje
-                        return#Termina de ejecutarse el metodo por conflicto de horarios
+                if (fecha_hora_inicio < fin_existente and#Compara la hora de incio del nuevo servicio con la hora de terminacion del servicio en curso
+                    fecha_hora_fin > inicio_existente):#Compara la hora de terminacion del nuevo servicio y la hora de inicio del servicio en curso
+                    raise ErrorReserva(#Lanza la execio error y imprime el mensaje
+                        "El servicio ya se encuentra reservado "
+                        "en ese horario."
+                    )
             nueva_reserva = Reserva(#Si la condicion no se cumple se crea el objeto Reserva y se guarda en la varible utilizando el metodo constructor de la clase Reserva
                     codigo_reserva, #Codigo de la reserva
                     cliente,#Cliente
@@ -291,14 +322,27 @@ class  SistemaAdministrador:#Se cre la clase que administrara los datos recivido
                     "Confirmada"#Estado de la reserva
                    )
             self.reservas.append(nueva_reserva)# Guarda la reserva en la lista
-            print("Reserva creada exitosamente.") # Confirma la creación de la reserva
+           
+            registrar_evento("Reserva creada exitosamente.")#Ejecuta el metodo regitrar y imprime el mensaje
+
     def cancelar_reserva(self, codigo_reserva):#Metodo para cancelar la reserva
+          
+        validar_dato(codigo_reserva, "Código de reserva")#Ejecuta validar para comprobar que el dato no este vacio
         reserva = self.buscar_reserva(codigo_reserva)# Busca la reserva por su código
+
         if reserva is None:#Si la reserva no exite
-            print("La reserva no se encuentra registrada.")#Imprime el siguiente mensaje
-        else:#Si la reserva exite
-            reserva.cancelar()# Llama al método cancelar de la clase Reserva
-            print("Reserva cancelada exitosamente.")#Imprime el siguiente mensaje
+            raise ErrorReserva(#Lanza la exepcion error y imprime el mensaje
+                            "La reserva no se encuentra registrada."
+            )
+
+        if reserva.estado == "Cancelada":#Si la reserva ya fue cancelada, compara el estado con el texto cancelada y sin coindise se ejecuta el raice
+            raise ErrorReserva(#Lanza la exepcion y imprime el mensaje
+                "La reserva ya fue cancelada"
+            )       
+        # Si no se lanza la exepcion
+        reserva.cancelar()# Llama al método cancelar de la clase Reserva
+       
+        registrar_evento("Reserva cancelada exitosamente.")#Ejecuta el metodo registrar y imprime le mensaje
 
 
 def menu():#Metodo para mostrar el menu de opciones
@@ -318,49 +362,86 @@ def menu():#Metodo para mostrar el menu de opciones
             print("Programa finalizado.")#Se imprime el mensaje de finalizado
             break#Para que el bucle se finalize
         elif opcion == "1":# Si la opción seleccionada es registrar 
-            id_cliente = input("Ingrese el número de identificación: ")#Solicita el numero de documento y guarda en la variable
-            nombre = input("Ingrese el nombre del cliente: ")#Solicita el nombre y guarda en la variable
-            telefono = input("Ingrese el número telefónico: ")#Solicita el numero telefonico y guarda en la variable
-            correo = input("Ingrese el correo electrónico: ")#Solicita el correo y guarda en la variable
-            direccion = input("Ingrese la dirección: ")#Solicita la direccion y guarda en la variable
-            edad = int(input("Ingrese la edad: "))#Solicita la y guarda en la variable como dato numerico
+            try:
+                id_cliente = input("Ingrese el número de identificación: ")#Solicita el numero de documento y guarda en la variable
+                nombre = input("Ingrese el nombre del cliente: ")#Solicita el nombre y guarda en la variable
+                telefono = input("Ingrese el número telefónico: ")#Solicita el numero telefonico y guarda en la variable
+                correo = input("Ingrese el correo electrónico: ")#Solicita el correo y guarda en la variable
+                direccion = input("Ingrese la dirección: ")#Solicita la direccion y guarda en la variable
+                edad = int(input("Ingrese la edad: "))#Solicita la y guarda en la variable como dato numerico
             
-            sistema.registrar_cliente( # Envía los datos al método registrar_cliente()
-                id_cliente,
-                nombre,
-                telefono,
-                correo,
-                direccion,
-                edad
-            )
+                sistema.registrar_cliente( # Envía los datos al método registrar_cliente()
+                    id_cliente,
+                    nombre,
+                    telefono,
+                    correo,
+                    direccion,
+                    edad
+                    )
+            except ValueError as error:#Cuando el tipo de dato no es correcto
+                registrar_error(error)#captura el error y lo guar en el archivo logs
+
+            except ErrorCliente as error:#Se ejecuta la exepcion perzonalizada cuando el error esta relacionado con el cliente
+                registrar_error(error)#Ejecuta el metodo regitrar y guarda el error.
+            finally:#Termina el registro aun cuando se presentan errores, pero no permite el registro exitoso si se presentan exepciones
+                print("Finalizó el proceso de registro.")
+            
         elif opcion == "2":# Si la opción seleccionada es la 2
             sistema.mostrar_clientes() # Llama al método que muestra todos los clientes registrados
         elif opcion == "3":# Si la opción seleccionada es la 3
             sistema.mostrar_servicios() # Llama al método que muestra todos los servicios disponibles
         elif opcion == "4":# Si la opción seleccionada es 4
-            codigo_reserva = input("Ingrese el código de la reserva: ") # Se solicita el código de la reserva y se guarda en variable
-            id_cliente = input("Ingrese la identificación del cliente: ") # Solicita la identificación del cliente  y se guarda en variable
-            id_servicio = input("Ingrese el código del servicio: ")# Solicita el código del servicio y se guarda en variable
-            fecha = input("Ingrese la fecha y hora ejm 01/11/2026 09:11")#Se solicita la hpra y fecha y se guarda en variable
-            fecha_hora_inicio = datetime.strptime(# Convierte el texto ingresado a datetime y guarda el valor en variable
-                fecha,#Datos proporcianados por el usuario
+            try:#Ecierra  el codigo para manejar los errores
+               codigo_reserva = input("Ingrese el código de la reserva: ") # Se solicita el código de la reserva y se guarda en variable
+               id_cliente = input("Ingrese la identificación del cliente: ") # Solicita la identificación del cliente  y se guarda en variable
+               id_servicio = input("Ingrese el código del servicio: ")# Solicita el código del servicio y se guarda en variable
+               fecha = input("Ingrese la fecha y hora ejm 01/11/2026 09:11")#Se solicita la hpra y fecha y se guarda en variable
+               fecha_hora_inicio = datetime.strptime(# Convierte el texto ingresado a datetime y guarda el valor en variable
+               fecha,#Datos proporcianados por el usuario
                 "%d/%m/%Y %H:%M"#Indica el formato a transformar dia, mes, año, hora y minuto
-            )
-            duracion = int(#Se guarda en varible
+               )
+               duracion = int(#Se guarda en varible
                 input("Ingrese la duración en horas: ")# Solicita la duración del servicio y se convierte en dato numerico
-            )
-            sistema.crear_reserva( # Llama al método crear_reserva()
-                codigo_reserva,
-                id_cliente,
-                id_servicio,
-                fecha_hora_inicio,
-                duracion
-            )
+               )
+               sistema.crear_reserva( # Llama al método crear_reserva()
+                   codigo_reserva,
+                   id_cliente,
+                   id_servicio,
+                   fecha_hora_inicio,
+                   duracion
+               )
+            except ValueError as error:#Cuando el tipo de dato no es correcto
+                registrar_error(error)#captura el error y lo guar en el archivo logs
+
+            except ErrorCliente as error:#Se ejecuta la exepcion perzonalizada cuando el error esta relacionado con el cliente
+                registrar_error(error)#Ejecuta el metodo regitrar y guarda el error.  
+
+            except ErrorServicio as error:#Se ejecuta la exepcion perzonalizada cuando el error esta relacionado con el servicio
+                registrar_error(error)#Ejecuta el metodo regitrar y guarda el error. 
+    
+            except ErrorReserva as error:#Se ejecuta la exepcion perzonalizada cuando el error esta relacionado con el servicio
+                registrar_error(error)#Ejecuta el metodo regitrar y guarda el error.   
+            finally:#Finaliza la reserva aun cuando se presentan errores, pero no permite la creacion de esta si se presentan exepciones
+                print("Finalizó el proceso de reserva.")
+            
         elif opcion == "5":# Si la opción seleccionada es cancelar es 5
-            codigo_reserva = input(# Solicita el código de la reserva que se desea cancelar y se guarda en variable
+            try:
+                codigo_reserva = input(# Solicita el código de la reserva que se desea cancelar y se guarda en variable
                 "Ingrese el código de la reserva a cancelar: "
-            )
-            sistema.cancelar_reserva(codigo_reserva) # Llama al método cancelar_reserva()
+                )
+                sistema.cancelar_reserva(codigo_reserva) # Llama al método cancelar_reserva()
+            except ValueError as error:#Cuando el tipo de dato no es correcto
+                registrar_error(error)#captura el error y lo guar en el archivo logs
+           
+            
+            except ErrorReserva as error:#Se ejecuta la exepcion perzonalizada cuando el error esta relacionado con el servicio
+                registrar_error(error)#Ejecuta el metodo regitrar y guarda el error. 
+
+            finally:#Finaliza la cancelación aun cuando se presentan errores, pero no permite la cancelacion de esta si se presentan exepciones
+                print("Finalizó el proceso de cancelación.")
+            
         elif opcion == "6":# Si la opción seleccionada es 6
             sistema.mostrar_reservas()  # Llama al método que muestra todas las reservas registradas
+        else:  # Cuando se marca un opcion que no exite
+            registrar_error("La opción seleccionada no es válida.")#Guarda el error ejecutando el metodo
 print(menu())
