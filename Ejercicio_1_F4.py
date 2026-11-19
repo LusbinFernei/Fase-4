@@ -117,7 +117,7 @@ class  SistemaAdministrador:#Se cre la clase que administrara los datos recivido
 
     
     # ASESORIAS
-  
+
 
         self.servicios.append(#Se agrga el pbjeto a la lista
             AsesoriaEspecializada(#Se crea el objeto apartir del metodo constructo de la clase
